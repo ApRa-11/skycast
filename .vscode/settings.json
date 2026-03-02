@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "C:/Users/appar/OneDrive/Desktop/chatbot"
+    ],
+    "cmake.sourceDirectory": "C:/Users/appar/skycast/skycast_app/linux"
+}
