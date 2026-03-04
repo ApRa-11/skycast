@@ -5,12 +5,11 @@ import 'package:http/http.dart' as http;
 class WeatherService {
   static Future<Map<String, dynamic>> fetchWeather(String city) async {
     final url = Uri.parse(
-      'http://localhost:8000/weather?city=$city',
+      'http://10.207.2.24:8000/weather?city=$city',
     );
 
     final response = await http.get(url);
 
-    // Debug logging (only runs in debug mode)
     if (kDebugMode) {
       debugPrint("Weather API Status: ${response.statusCode}");
       debugPrint("Weather API Response: ${response.body}");
@@ -23,7 +22,6 @@ class WeatherService {
         throw Exception(data['error']);
       }
 
-      // Ensure new fields exist
       data["recommendation"] = data["recommendation"] ?? "N/A";
       data["risk_score"] = data["risk_score"] ?? 0;
 
@@ -32,4 +30,19 @@ class WeatherService {
       throw Exception('Failed to load weather');
     }
   }
+
+  static Future<void> sendFcmToken(String token) async {
+  final url = Uri.parse('http://10.207.2.24:8000/register-token');
+
+  try {
+    await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'token': token}),
+    );
+    print("FCM token sent to backend");
+  } catch (e) {
+    print("Error sending FCM token: $e");
+  }
+}
 }

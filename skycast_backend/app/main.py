@@ -222,3 +222,14 @@ class ChatRequest(BaseModel):
 def chat_endpoint(request: ChatRequest):
     reply = get_reply(request.session_id, request.message)
     return {"reply": reply}
+
+fcm_tokens = []
+
+@app.post("/register-token")
+async def register_token(data: dict):
+    token = data.get("token")
+
+    if token and token not in fcm_tokens:
+        fcm_tokens.append(token)
+
+    return {"message": "Token registered"}

@@ -16,35 +16,44 @@ class _HomeScreenState extends State<HomeScreen> {
   String? error;
 
   void getWeather() async {
-    if (_controller.text.isEmpty) {
-      setState(() {
-        error = "Please enter a city name";
-      });
-      return;
-    }
+  if (_controller.text.isEmpty) {
+    setState(() {
+      error = "Please enter a city name";
+    });
+    return;
+  }
+
+  setState(() {
+    isLoading = true;
+    error = null;
+    weatherData = null;
+  });
+
+  try {
+    final data = await WeatherService.fetchWeather(_controller.text);
+
+    if (!mounted) return;
 
     setState(() {
-      isLoading = true;
-      error = null;
-      weatherData = null;
+      weatherData = data;
     });
 
-    try {
-      final data = await WeatherService.fetchWeather(_controller.text);
+    checkForAlert(data);
+  } catch (e) {
+    if (!mounted) return;
 
-      setState(() {
-        weatherData = data;
-      });
-    } catch (e) {
-      setState(() {
-        error = e.toString();
-      });
-    } finally {
+    setState(() {
+      error = e.toString();
+    });
+  } finally {
+    // ✅ FIX — no return inside finally
+    if (mounted) {
       setState(() {
         isLoading = false;
       });
     }
   }
+}
 
   // Disaster Color Logic
   Color getDisasterColor(String type) {
@@ -66,6 +75,33 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.pushNamed(context, '/chat');
   }
 
+  void checkForAlert(Map<String, dynamic> data) {
+    final risk = data['risk_score'] ?? 0;
+    final disasterType = data['disaster_type'] ?? "Disaster";
+
+    if (risk >= 70 && mounted) {
+      Future.microtask(() {
+        if (!mounted) return; // ✅ extra safety
+
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("🚨 High Risk Alert"),
+            content: Text(
+              "High $disasterType risk detected in your area. Please stay safe!",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
       ),
 
-      // ✅ CHAT BUTTON ADDED
       floatingActionButton: FloatingActionButton(
         onPressed: openChat,
         child: const Icon(Icons.chat),
@@ -133,7 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             'Wind Speed: ${weatherData!['wind_speed'] ?? "-"} m/s'),
                         const SizedBox(height: 20),
 
-                        // 🔥 Disaster Prediction Section
                         if (weatherData!['disaster_type'] != null)
                           Container(
                             width: double.infinity,

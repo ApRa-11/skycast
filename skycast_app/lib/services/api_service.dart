@@ -29,7 +29,7 @@ class DisasterResponse {
 }
 
 class ApiService {
-  static const String baseUrl = "http://localhost:8000";
+  static const String baseUrl = "http://10.207.2.24:8000";
 
   static Future<DisasterResponse?> predictDisaster({
     required double temperature,

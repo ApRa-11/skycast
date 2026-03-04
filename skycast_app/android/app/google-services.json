@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552195318590",
+    "project_id": "skycast-db918",
+    "storage_bucket": "skycast-db918.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552195318590:android:411bb6992d43a1621dc26f",
+        "android_client_info": {
+          "package_name": "com.example.skycast_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8ZnHg87Y8vdZUGeTptjPWeHR6qps9jJE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
